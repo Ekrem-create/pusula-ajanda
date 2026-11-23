@@ -1,0 +1,45 @@
+{
+  "id": "./",
+  "name": "Pusula — Kişisel Ajanda ve Not Defteri",
+  "short_name": "Pusula",
+  "description": "Planlarını, görevlerini ve notlarını tek yerde takip ettiğin kişisel ajandan. Çevrimdışı çalışır.",
+  "lang": "tr",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#f8f7f3",
+  "theme_color": "#d4654a",
+  "categories": ["productivity", "lifestyle", "utilities"],
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "./icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Yeni görev ekle",
+      "short_name": "Yeni görev",
+      "description": "Hızlıca bir görev oluştur",
+      "url": "./index.html?action=new-task",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Bugünün planı",
+      "short_name": "Bugün",
+      "description": "Bugünkü görevleri aç",
+      "url": "./index.html?action=today",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Not defteri",
+      "short_name": "Notlar",
+      "description": "Notları aç",
+      "url": "./index.html?action=notes",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}
