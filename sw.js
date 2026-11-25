@@ -1,5 +1,5 @@
 /* Pusula service worker — çevrimdışı kullanım ve uygulama önbelleği */
-const CACHE = 'pusula-v2';
+const CACHE = 'pusula-v3';
 const ASSETS = [
   './',
   './index.html',
