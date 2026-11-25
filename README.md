@@ -14,7 +14,7 @@ Planlarını, görevlerini ve notlarını tek yerde takip etmek için tasarlanm�
 APK tamamen çevrimdışıdır: internet izni bile yoktur. Veriler uygulamanın kendi depolamasında kalır.
 
 ### iPhone / iPad — Ana Ekrana Ekle
-1. Telefonda HTTPS adresi aç (şu an çalışan geçici adres: `https://match-conjunction-actress-bag.trycloudflare.com/` — QR: `telefon-qr.png`).
+1. Telefonda HTTPS adresi aç (şu an çalışan geçici adres: `https://distinction-handmade-grey-survive.trycloudflare.com/` — QR: `telefon-qr.png`).
 2. Safari → **Paylaş** → **Ana Ekrana Ekle**.
 3. Ana ekrandaki Pusula simgesi bağımsız pencerede açılır; ilk yüklemeden sonra çevrimdışı çalışır.
 
