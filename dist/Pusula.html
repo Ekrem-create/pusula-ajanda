@@ -405,6 +405,37 @@ body.dark .toast { background: var(--surface); border: 1px solid var(--line-stro
   .toast-stack { left: 16px; right: 16px; bottom: 16px; align-items: stretch; }
 }
 
+/* ---------------- Günlük notlar ---------------- */
+.daily-quick {
+  margin-bottom: 26px; padding: 18px 22px; border: 1px solid var(--line);
+  border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-sm);
+}
+.daily-quick-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.daily-quick h2 { font-family: 'Fraunces', Georgia, serif; font-size: 18px; font-weight: 600; margin: 4px 0 0; letter-spacing: -.2px; }
+.save-status { font-size: 11px; font-weight: 700; color: var(--sage); white-space: nowrap; padding-top: 3px; }
+.daily-quick textarea, .journal-editor textarea {
+  width: 100%; min-height: 84px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--paper); padding: 12px 14px; font-size: 13.5px; line-height: 1.6;
+  outline: 0; resize: vertical; transition: .16s;
+}
+.daily-quick textarea:focus, .journal-editor textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.journal-editor textarea { min-height: 180px; }
+.journal-section .list-toolbar input[type=date] {
+  border: 1px solid var(--line); border-radius: 9px; background: var(--surface);
+  padding: 7px 10px; font-size: 12.5px; outline: 0;
+}
+.journal-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+.journal-list { display: flex; flex-direction: column; gap: 7px; margin-top: 18px; }
+.journal-entry {
+  display: flex; flex-direction: column; gap: 3px; width: 100%; text-align: left;
+  border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface);
+  padding: 11px 14px; box-shadow: var(--shadow-sm); transition: .15s;
+}
+.journal-entry:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+.journal-entry.active { border-color: var(--accent); background: var(--accent-soft); }
+.journal-entry strong { font-family: 'Fraunces', Georgia, serif; font-size: 13px; }
+.journal-entry span { font-size: 12px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* ============================================================
    MOBİL ÖNCELİKLİ DAVRANIŞ — aksini belirtmedikçe varsayılan
    ============================================================ */
@@ -540,6 +571,11 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
 
   .notes-grid { grid-template-columns: 1fr; gap: 10px; }
   .note-card { min-height: 120px; }
+  .daily-quick { padding: 14px; border-radius: 14px; margin-bottom: 18px; }
+  .daily-quick h2 { font-size: 16px; }
+  .daily-quick textarea { min-height: 96px; }
+  .journal-editor textarea { min-height: 150px; }
+  .journal-entry { padding: 10px 12px; }
 
   /* Modal = alt sayfa */
   .modal-backdrop { align-items: flex-end; padding: 0; }
@@ -612,6 +648,10 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
         <button class="nav-item" data-view="calendar">
           <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M9 3v4M15 3v4"/><circle cx="9" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1" fill="currentColor" stroke="none"/></svg>
           <span>Takvim</span>
+        </button>
+        <button class="nav-item" data-view="journal">
+          <svg viewBox="0 0 24 24"><path d="M5 4h13a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z"/><path d="M5 18a2 2 0 0 1 2-2h13M9 8h7M9 12h5"/></svg>
+          <span>Günlük notlar</span><span class="nav-count" data-count="journal">0</span>
         </button>
         <button class="nav-item" data-view="notes">
           <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>
@@ -692,6 +732,18 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
           <div class="week-strip" id="weekStrip"></div>
         </section>
 
+        <!-- Günlük not (Bugün / seçili gün) -->
+        <section class="daily-quick hidden" id="dailyQuick">
+          <div class="daily-quick-head">
+            <div>
+              <span class="eyebrow">GÜNLÜK NOT</span>
+              <h2 id="dailyQuickTitle">Bugünün notu</h2>
+            </div>
+            <span class="save-status" id="dailyStatus">Otomatik kaydedilir</span>
+          </div>
+          <textarea id="dailyNoteText" rows="3" placeholder="Bugün neler oldu? Aklında kalanları yaz…"></textarea>
+        </section>
+
         <!-- Görev listesi -->
         <section class="task-section" id="taskSection">
           <div class="list-toolbar">
@@ -744,6 +796,22 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
             <button class="primary-small" id="newNoteBtn">+ Yeni not</button>
           </div>
           <div class="notes-grid" id="notesGrid"></div>
+        </section>
+
+        <!-- Günlük notlar arşivi -->
+        <section class="journal-section hidden" id="journalSection">
+          <div class="list-toolbar">
+            <div class="list-heading"><h2>Günlük notlar</h2><span class="pill" id="journalCount">0 gün</span></div>
+            <input type="date" id="journalDate" aria-label="Not tarihi" />
+          </div>
+          <div class="journal-editor">
+            <textarea id="journalText" rows="8" placeholder="O günün notunu yaz…"></textarea>
+            <div class="journal-actions">
+              <span class="save-status" id="journalStatus">Otomatik kaydedilir</span>
+              <button class="text-btn danger" id="journalDelete">Bu günün notunu sil</button>
+            </div>
+          </div>
+          <div class="journal-list" id="journalList"></div>
         </section>
 
         <div class="empty-state hidden" id="emptyState">
@@ -862,6 +930,7 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
         { id: uid(), title: 'Aklıma gelen fikirler', body: '• Sabah 20 dakikalık günlük ritüeli\n• Haftalık gözden geçirme şablonu\n• Okuma listesini küçült, odaklan', color: '#c9903f', pinned: false, updatedAt: new Date().toISOString() },
         { id: uid(), title: 'Okuma listesi', body: '1. Derin Çalışma\n2. Atomik Alışkanlıklar\n3. İyi Bir Günün Sırrı', color: '#66856f', pinned: false, updatedAt: new Date().toISOString() }
       ],
+      dayNotes: { [T]: 'Ajandayı bugün düzenledim. Yarın sunumu bitirmeyi hedefle.' },
       projects: [
         { id: p1, name: 'Çalışma', color: '#7d7bc4' },
         { id: p2, name: 'Finans', color: '#4e93a8' },
@@ -879,6 +948,7 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
       return {
         tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
         notes: Array.isArray(parsed.notes) ? parsed.notes : [],
+        dayNotes: (parsed.dayNotes && typeof parsed.dayNotes === 'object' && !Array.isArray(parsed.dayNotes)) ? parsed.dayNotes : {},
         projects: Array.isArray(parsed.projects) ? parsed.projects : [],
         settings: Object.assign({ theme: 'light', showDone: false, sort: 'manual' }, parsed.settings || {})
       };
@@ -886,7 +956,7 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
   }
 
   let state = load();
-  const ui = { view: 'today', selectedDate: null, query: '', calMonth: new Date(), modalCleanup: null };
+  const ui = { view: 'today', selectedDate: null, journalDate: TODAY(), query: '', calMonth: new Date(), modalCleanup: null };
   const save = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { toast('Kaydedilemedi: depolama dolu olabilir.'); } };
 
   /* ---------- Bildirimler ---------- */
@@ -1000,7 +1070,8 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
       upcoming: state.tasks.filter(t => !t.done && t.due > T).length,
       all: state.tasks.filter(t => !t.done).length,
       completed: state.tasks.filter(t => t.done).length,
-      notes: state.notes.length
+      notes: state.notes.length,
+      journal: Object.keys(state.dayNotes || {}).filter(d => String(state.dayNotes[d]).trim()).length
     };
     $$('[data-count]').forEach(el => { el.textContent = counts[el.dataset.count] ?? ''; });
     const activeView = ui.view === 'date' ? 'calendar' : ui.view;
@@ -1030,6 +1101,7 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
       upcoming: ['Yaklaşan', 'Önümüzdeki 30 gün planların'],
       all: ['Tüm görevler', 'Her şey tek listede'],
       completed: ['Tamamlananlar', 'Hallettiğin işler'],
+      journal: ['Günlük notlar', 'Her günü kendi notuyla hatırla'],
       notes: ['Notlar', 'Aklına gelenleri yakala'],
       calendar: ['Takvim', 'Aya yayılımını gör']
     };
@@ -1115,12 +1187,23 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
     $('#taskList').innerHTML = groups.map(g => `<div class="task-group-label">${esc(g.label)}</div>${g.items.map(taskRow).join('')}`).join('');
     $('#toggleDoneBtn').textContent = state.settings.showDone ? 'Tamamlananları gizle' : 'Tamamlananları göster';
     $('#clearDoneBtn').classList.toggle('hidden', !state.tasks.some(t => t.done));
-    const isTaskView = ui.view !== 'notes' && ui.view !== 'calendar';
+    const isTaskView = !['notes', 'calendar', 'journal'].includes(ui.view);
     $('#taskSection').classList.toggle('hidden', !isTaskView);
     $('#calendarSection').classList.toggle('hidden', ui.view !== 'calendar');
     $('#notesSection').classList.toggle('hidden', ui.view !== 'notes');
+    $('#journalSection').classList.toggle('hidden', ui.view !== 'journal');
     $('#overview').classList.toggle('hidden', ui.view !== 'today');
     $('#mobileAddBar').classList.toggle('hidden', !isTaskView);
+
+    const showDaily = ui.view === 'today' || ui.view === 'date';
+    $('#dailyQuick').classList.toggle('hidden', !showDaily);
+    if (showDaily) {
+      const key = ui.view === 'date' ? ui.selectedDate : TODAY();
+      $('#dailyQuickTitle').textContent = ui.view === 'date' ? `${niceDate(key)} notu` : 'Bugünün notu';
+      if (document.activeElement !== $('#dailyNoteText')) $('#dailyNoteText').value = (state.dayNotes || {})[key] || '';
+      $('#dailyStatus').textContent = 'Otomatik kaydedilir';
+    }
+
     $('#emptyState').classList.toggle('hidden', !isTaskView || list.length > 0);
     if (isTaskView && !list.length) {
       const searching = !!ui.query.trim();
@@ -1131,6 +1214,46 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
     }
     if (ui.view === 'calendar') renderCalendar();
     if (ui.view === 'notes') renderNotes();
+    if (ui.view === 'journal') renderJournal();
+  }
+
+  function renderJournal() {
+    const entries = Object.entries(state.dayNotes || {})
+      .filter(([, text]) => String(text || '').trim())
+      .sort((a, b) => b[0].localeCompare(a[0]));
+    $('#journalCount').textContent = `${entries.length} gün`;
+    $('#journalDate').value = ui.journalDate;
+    if (document.activeElement !== $('#journalText')) $('#journalText').value = (state.dayNotes || {})[ui.journalDate] || '';
+    $('#journalList').innerHTML = entries.length ? entries.map(([date, text]) => `
+      <button class="journal-entry ${date === ui.journalDate ? 'active' : ''}" data-journal-date="${date}">
+        <strong>${esc(niceDate(date))} · ${esc(date)}</strong>
+        <span>${esc(String(text).replace(/\s+/g, ' ').slice(0, 90))}</span>
+      </button>`).join('') : '<div class="sub-empty">Henüz günlük not yok. Yukarıdan yazmaya başlayabilirsin.</div>';
+  }
+
+  function commitDaily(date, text, statusEl, refreshList) {
+    if (!date) return;
+    if (String(text).trim()) state.dayNotes[date] = text;
+    else delete state.dayNotes[date];
+    save();
+    renderSidebar();
+    if (statusEl) statusEl.textContent = 'Kaydedildi ✓';
+    if (refreshList && ui.view === 'journal') renderJournal();
+  }
+
+  function bindDaily(el, getDate, statusEl, refreshList) {
+    if (!el) return;
+    let timer = null;
+    const commit = () => {
+      clearTimeout(timer); timer = null;
+      commitDaily(getDate(), el.value, statusEl, refreshList);
+    };
+    el.addEventListener('input', () => {
+      if (statusEl) statusEl.textContent = 'Yazılıyor…';
+      clearTimeout(timer);
+      timer = setTimeout(commit, 400);
+    });
+    el.addEventListener('blur', commit);
   }
 
   /* ---------- Render: takvim ---------- */
@@ -1343,6 +1466,7 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
             if (!Array.isArray(data.tasks)) throw new Error('Geçersiz dosya');
             state = {
               tasks: data.tasks, notes: Array.isArray(data.notes) ? data.notes : [],
+              dayNotes: (data.dayNotes && typeof data.dayNotes === 'object' && !Array.isArray(data.dayNotes)) ? data.dayNotes : {},
               projects: Array.isArray(data.projects) ? data.projects : [],
               settings: Object.assign({ theme: 'light', showDone: false, sort: 'manual' }, data.settings || {})
             };
@@ -1402,6 +1526,14 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
     const day = e.target.closest('[data-date]');
     if (day) { ui.selectedDate = day.dataset.date; setView('date'); return; }
 
+    const journalEntry = e.target.closest('[data-journal-date]');
+    if (journalEntry) {
+      ui.journalDate = journalEntry.dataset.journalDate;
+      renderJournal();
+      $('#journalText').focus();
+      return;
+    }
+
     const hint = e.target.closest('.hint');
     if (hint) {
       const input = $('#quickAdd'), v = input.value.trim();
@@ -1458,13 +1590,60 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
     if (e.key === 'Enter') { e.preventDefault(); addTask(e.target.value); e.target.value = ''; }
     if (e.key === 'Escape') e.target.blur();
   });
+
+  /* Telefondaki sabit hızlı ekleme çubuğu */
+  const submitMobileTask = () => {
+    const input = $('#mobileQuickAdd');
+    const value = input.value;
+    if (!value.trim()) return;
+    addTask(value);
+    input.value = '';
+    input.focus();
+  };
+  $('#mobileQuickAdd').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); submitMobileTask(); }
+    if (e.key === 'Escape') e.target.blur();
+  });
+  $('#mobileAddSend').onclick = submitMobileTask;
+
+  /* Günlük notlar — yazarken otomatik kayıt */
+  bindDaily($('#dailyNoteText'),
+    () => ui.view === 'date' ? ui.selectedDate : TODAY(),
+    $('#dailyStatus'), false);
+  bindDaily($('#journalText'), () => ui.journalDate, $('#journalStatus'), true);
+
+  $('#journalDate').addEventListener('change', e => {
+    ui.journalDate = e.target.value || TODAY();
+    renderJournal();
+    $('#journalText').focus();
+  });
+  $('#journalDelete').onclick = () => {
+    delete state.dayNotes[ui.journalDate];
+    $('#journalText').value = '';
+    save(); render(); toast('Bu günün notu silindi.');
+  };
+
+  $('#fabAdd').onclick = () => {
+    closeSidebar();
+    if (ui.view === 'notes') { openNoteModal(); return; }
+    if (ui.view === 'today' || ui.view === 'date' || ui.view === 'journal') {
+      const target = ui.view === 'journal' ? $('#journalText') : $('#dailyNoteText');
+      target.focus();
+      if (target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    openTaskModal(null);
+  };
+
   $('#dateChip').onclick = () => { const i = $('#quickAdd'); i.value = (i.value.trim() + ' bugün').trim(); i.focus(); };
   $('#priorityChip').onclick = () => { const i = $('#quickAdd'); i.value = (i.value.trim() + ' !1').trim(); i.focus(); };
   $('#projectChip').onclick = () => { const i = $('#quickAdd'); i.value = (i.value.trim() + ' @' + (state.projects[0]?.name || 'Proje')).trim(); i.focus(); };
   $('#emptyAction').onclick = () => {
     if (ui.query) { ui.query = ''; $('#searchInput').value = ''; render(); }
     else if (ui.view === 'notes') openNoteModal();
-    else { $('#quickAdd').focus(); }
+    else if (ui.view === 'journal') $('#journalText').focus();
+    else if (!$('#mobileAddBar').classList.contains('hidden')) $('#mobileQuickAdd').focus();
+    else $('#quickAdd').focus();
   };
   $('#toggleDoneBtn').onclick = () => { state.settings.showDone = !state.settings.showDone; save(); render(); };
   $('#clearDoneBtn').onclick = () => {

@@ -58,6 +58,10 @@
           <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M9 3v4M15 3v4"/><circle cx="9" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1" fill="currentColor" stroke="none"/></svg>
           <span>Takvim</span>
         </button>
+        <button class="nav-item" data-view="journal">
+          <svg viewBox="0 0 24 24"><path d="M5 4h13a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z"/><path d="M5 18a2 2 0 0 1 2-2h13M9 8h7M9 12h5"/></svg>
+          <span>Günlük notlar</span><span class="nav-count" data-count="journal">0</span>
+        </button>
         <button class="nav-item" data-view="notes">
           <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>
           <span>Notlar</span><span class="nav-count" data-count="notes">0</span>
@@ -137,6 +141,18 @@
           <div class="week-strip" id="weekStrip"></div>
         </section>
 
+        <!-- Günlük not (Bugün / seçili gün) -->
+        <section class="daily-quick hidden" id="dailyQuick">
+          <div class="daily-quick-head">
+            <div>
+              <span class="eyebrow">GÜNLÜK NOT</span>
+              <h2 id="dailyQuickTitle">Bugünün notu</h2>
+            </div>
+            <span class="save-status" id="dailyStatus">Otomatik kaydedilir</span>
+          </div>
+          <textarea id="dailyNoteText" rows="3" placeholder="Bugün neler oldu? Aklında kalanları yaz…"></textarea>
+        </section>
+
         <!-- Görev listesi -->
         <section class="task-section" id="taskSection">
           <div class="list-toolbar">
@@ -189,6 +205,22 @@
             <button class="primary-small" id="newNoteBtn">+ Yeni not</button>
           </div>
           <div class="notes-grid" id="notesGrid"></div>
+        </section>
+
+        <!-- Günlük notlar arşivi -->
+        <section class="journal-section hidden" id="journalSection">
+          <div class="list-toolbar">
+            <div class="list-heading"><h2>Günlük notlar</h2><span class="pill" id="journalCount">0 gün</span></div>
+            <input type="date" id="journalDate" aria-label="Not tarihi" />
+          </div>
+          <div class="journal-editor">
+            <textarea id="journalText" rows="8" placeholder="O günün notunu yaz…"></textarea>
+            <div class="journal-actions">
+              <span class="save-status" id="journalStatus">Otomatik kaydedilir</span>
+              <button class="text-btn danger" id="journalDelete">Bu günün notunu sil</button>
+            </div>
+          </div>
+          <div class="journal-list" id="journalList"></div>
         </section>
 
         <div class="empty-state hidden" id="emptyState">

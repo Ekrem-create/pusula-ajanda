@@ -60,6 +60,7 @@
         { id: uid(), title: 'Aklıma gelen fikirler', body: '• Sabah 20 dakikalık günlük ritüeli\n• Haftalık gözden geçirme şablonu\n• Okuma listesini küçült, odaklan', color: '#c9903f', pinned: false, updatedAt: new Date().toISOString() },
         { id: uid(), title: 'Okuma listesi', body: '1. Derin Çalışma\n2. Atomik Alışkanlıklar\n3. İyi Bir Günün Sırrı', color: '#66856f', pinned: false, updatedAt: new Date().toISOString() }
       ],
+      dayNotes: { [T]: 'Ajandayı bugün düzenledim. Yarın sunumu bitirmeyi hedefle.' },
       projects: [
         { id: p1, name: 'Çalışma', color: '#7d7bc4' },
         { id: p2, name: 'Finans', color: '#4e93a8' },
@@ -77,6 +78,7 @@
       return {
         tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
         notes: Array.isArray(parsed.notes) ? parsed.notes : [],
+        dayNotes: (parsed.dayNotes && typeof parsed.dayNotes === 'object' && !Array.isArray(parsed.dayNotes)) ? parsed.dayNotes : {},
         projects: Array.isArray(parsed.projects) ? parsed.projects : [],
         settings: Object.assign({ theme: 'light', showDone: false, sort: 'manual' }, parsed.settings || {})
       };
@@ -84,7 +86,7 @@
   }
 
   let state = load();
-  const ui = { view: 'today', selectedDate: null, query: '', calMonth: new Date(), modalCleanup: null };
+  const ui = { view: 'today', selectedDate: null, journalDate: TODAY(), query: '', calMonth: new Date(), modalCleanup: null };
   const save = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { toast('Kaydedilemedi: depolama dolu olabilir.'); } };
 
   /* ---------- Bildirimler ---------- */
@@ -198,7 +200,8 @@
       upcoming: state.tasks.filter(t => !t.done && t.due > T).length,
       all: state.tasks.filter(t => !t.done).length,
       completed: state.tasks.filter(t => t.done).length,
-      notes: state.notes.length
+      notes: state.notes.length,
+      journal: Object.keys(state.dayNotes || {}).filter(d => String(state.dayNotes[d]).trim()).length
     };
     $$('[data-count]').forEach(el => { el.textContent = counts[el.dataset.count] ?? ''; });
     const activeView = ui.view === 'date' ? 'calendar' : ui.view;
@@ -228,6 +231,7 @@
       upcoming: ['Yaklaşan', 'Önümüzdeki 30 gün planların'],
       all: ['Tüm görevler', 'Her şey tek listede'],
       completed: ['Tamamlananlar', 'Hallettiğin işler'],
+      journal: ['Günlük notlar', 'Her günü kendi notuyla hatırla'],
       notes: ['Notlar', 'Aklına gelenleri yakala'],
       calendar: ['Takvim', 'Aya yayılımını gör']
     };
@@ -313,12 +317,23 @@
     $('#taskList').innerHTML = groups.map(g => `<div class="task-group-label">${esc(g.label)}</div>${g.items.map(taskRow).join('')}`).join('');
     $('#toggleDoneBtn').textContent = state.settings.showDone ? 'Tamamlananları gizle' : 'Tamamlananları göster';
     $('#clearDoneBtn').classList.toggle('hidden', !state.tasks.some(t => t.done));
-    const isTaskView = ui.view !== 'notes' && ui.view !== 'calendar';
+    const isTaskView = !['notes', 'calendar', 'journal'].includes(ui.view);
     $('#taskSection').classList.toggle('hidden', !isTaskView);
     $('#calendarSection').classList.toggle('hidden', ui.view !== 'calendar');
     $('#notesSection').classList.toggle('hidden', ui.view !== 'notes');
+    $('#journalSection').classList.toggle('hidden', ui.view !== 'journal');
     $('#overview').classList.toggle('hidden', ui.view !== 'today');
     $('#mobileAddBar').classList.toggle('hidden', !isTaskView);
+
+    const showDaily = ui.view === 'today' || ui.view === 'date';
+    $('#dailyQuick').classList.toggle('hidden', !showDaily);
+    if (showDaily) {
+      const key = ui.view === 'date' ? ui.selectedDate : TODAY();
+      $('#dailyQuickTitle').textContent = ui.view === 'date' ? `${niceDate(key)} notu` : 'Bugünün notu';
+      if (document.activeElement !== $('#dailyNoteText')) $('#dailyNoteText').value = (state.dayNotes || {})[key] || '';
+      $('#dailyStatus').textContent = 'Otomatik kaydedilir';
+    }
+
     $('#emptyState').classList.toggle('hidden', !isTaskView || list.length > 0);
     if (isTaskView && !list.length) {
       const searching = !!ui.query.trim();
@@ -329,6 +344,46 @@
     }
     if (ui.view === 'calendar') renderCalendar();
     if (ui.view === 'notes') renderNotes();
+    if (ui.view === 'journal') renderJournal();
+  }
+
+  function renderJournal() {
+    const entries = Object.entries(state.dayNotes || {})
+      .filter(([, text]) => String(text || '').trim())
+      .sort((a, b) => b[0].localeCompare(a[0]));
+    $('#journalCount').textContent = `${entries.length} gün`;
+    $('#journalDate').value = ui.journalDate;
+    if (document.activeElement !== $('#journalText')) $('#journalText').value = (state.dayNotes || {})[ui.journalDate] || '';
+    $('#journalList').innerHTML = entries.length ? entries.map(([date, text]) => `
+      <button class="journal-entry ${date === ui.journalDate ? 'active' : ''}" data-journal-date="${date}">
+        <strong>${esc(niceDate(date))} · ${esc(date)}</strong>
+        <span>${esc(String(text).replace(/\s+/g, ' ').slice(0, 90))}</span>
+      </button>`).join('') : '<div class="sub-empty">Henüz günlük not yok. Yukarıdan yazmaya başlayabilirsin.</div>';
+  }
+
+  function commitDaily(date, text, statusEl, refreshList) {
+    if (!date) return;
+    if (String(text).trim()) state.dayNotes[date] = text;
+    else delete state.dayNotes[date];
+    save();
+    renderSidebar();
+    if (statusEl) statusEl.textContent = 'Kaydedildi ✓';
+    if (refreshList && ui.view === 'journal') renderJournal();
+  }
+
+  function bindDaily(el, getDate, statusEl, refreshList) {
+    if (!el) return;
+    let timer = null;
+    const commit = () => {
+      clearTimeout(timer); timer = null;
+      commitDaily(getDate(), el.value, statusEl, refreshList);
+    };
+    el.addEventListener('input', () => {
+      if (statusEl) statusEl.textContent = 'Yazılıyor…';
+      clearTimeout(timer);
+      timer = setTimeout(commit, 400);
+    });
+    el.addEventListener('blur', commit);
   }
 
   /* ---------- Render: takvim ---------- */
@@ -541,6 +596,7 @@
             if (!Array.isArray(data.tasks)) throw new Error('Geçersiz dosya');
             state = {
               tasks: data.tasks, notes: Array.isArray(data.notes) ? data.notes : [],
+              dayNotes: (data.dayNotes && typeof data.dayNotes === 'object' && !Array.isArray(data.dayNotes)) ? data.dayNotes : {},
               projects: Array.isArray(data.projects) ? data.projects : [],
               settings: Object.assign({ theme: 'light', showDone: false, sort: 'manual' }, data.settings || {})
             };
@@ -600,6 +656,14 @@
     const day = e.target.closest('[data-date]');
     if (day) { ui.selectedDate = day.dataset.date; setView('date'); return; }
 
+    const journalEntry = e.target.closest('[data-journal-date]');
+    if (journalEntry) {
+      ui.journalDate = journalEntry.dataset.journalDate;
+      renderJournal();
+      $('#journalText').focus();
+      return;
+    }
+
     const hint = e.target.closest('.hint');
     if (hint) {
       const input = $('#quickAdd'), v = input.value.trim();
@@ -656,13 +720,60 @@
     if (e.key === 'Enter') { e.preventDefault(); addTask(e.target.value); e.target.value = ''; }
     if (e.key === 'Escape') e.target.blur();
   });
+
+  /* Telefondaki sabit hızlı ekleme çubuğu */
+  const submitMobileTask = () => {
+    const input = $('#mobileQuickAdd');
+    const value = input.value;
+    if (!value.trim()) return;
+    addTask(value);
+    input.value = '';
+    input.focus();
+  };
+  $('#mobileQuickAdd').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); submitMobileTask(); }
+    if (e.key === 'Escape') e.target.blur();
+  });
+  $('#mobileAddSend').onclick = submitMobileTask;
+
+  /* Günlük notlar — yazarken otomatik kayıt */
+  bindDaily($('#dailyNoteText'),
+    () => ui.view === 'date' ? ui.selectedDate : TODAY(),
+    $('#dailyStatus'), false);
+  bindDaily($('#journalText'), () => ui.journalDate, $('#journalStatus'), true);
+
+  $('#journalDate').addEventListener('change', e => {
+    ui.journalDate = e.target.value || TODAY();
+    renderJournal();
+    $('#journalText').focus();
+  });
+  $('#journalDelete').onclick = () => {
+    delete state.dayNotes[ui.journalDate];
+    $('#journalText').value = '';
+    save(); render(); toast('Bu günün notu silindi.');
+  };
+
+  $('#fabAdd').onclick = () => {
+    closeSidebar();
+    if (ui.view === 'notes') { openNoteModal(); return; }
+    if (ui.view === 'today' || ui.view === 'date' || ui.view === 'journal') {
+      const target = ui.view === 'journal' ? $('#journalText') : $('#dailyNoteText');
+      target.focus();
+      if (target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    openTaskModal(null);
+  };
+
   $('#dateChip').onclick = () => { const i = $('#quickAdd'); i.value = (i.value.trim() + ' bugün').trim(); i.focus(); };
   $('#priorityChip').onclick = () => { const i = $('#quickAdd'); i.value = (i.value.trim() + ' !1').trim(); i.focus(); };
   $('#projectChip').onclick = () => { const i = $('#quickAdd'); i.value = (i.value.trim() + ' @' + (state.projects[0]?.name || 'Proje')).trim(); i.focus(); };
   $('#emptyAction').onclick = () => {
     if (ui.query) { ui.query = ''; $('#searchInput').value = ''; render(); }
     else if (ui.view === 'notes') openNoteModal();
-    else { $('#quickAdd').focus(); }
+    else if (ui.view === 'journal') $('#journalText').focus();
+    else if (!$('#mobileAddBar').classList.contains('hidden')) $('#mobileQuickAdd').focus();
+    else $('#quickAdd').focus();
   };
   $('#toggleDoneBtn').onclick = () => { state.settings.showDone = !state.settings.showDone; save(); render(); };
   $('#clearDoneBtn').onclick = () => {

@@ -1,8 +1,35 @@
 # Pusula — Kişisel Ajanda & Not Defteri
 
-Planlarını, görevlerini ve notlarını tek yerde takip etmek için tasarlanmış, **yüklenebilir (PWA)** bir ajanda uygulaması. Kendi penceresinde açılır, çevrimdışı çalışır, hesap gerektirmez; verilerin yalnızca kendi cihazında saklanır.
+Planlarını, görevlerini ve notlarını tek yerde takip etmek için tasarlanmış, **telefon öncelikli** bir ajanda uygulaması. Ana ekrandan dokunup açılır, çevrimdışı çalışır, hesap gerektirmez; verilerin yalnızca kendi cihazında saklanır.
 
-## Uygulama olarak başlatma
+> **Varsayılan ilke:** Aksini açıkça belirtmediğin sürece tüm çalışmalarımı telefonda çalışacak şekilde yapıyorum.
+
+## Telefona kurulum
+
+### Android — gerçek APK (önerilen)
+1. `Pusula.apk` dosyasını telefona aktar (USB, WhatsApp, e-posta veya dosya paylaşımı).
+2. Dosyaya dokun. Android "Bilinmeyen kaynaklardan yükleme" izni isterse izin ver.
+3. Yüklendikten sonra **Pusula** simgesi ana ekranda görünür; internet olmadan açılır.
+
+APK tamamen çevrimdışıdır: internet izni bile yoktur. Veriler uygulamanın kendi depolamasında kalır.
+
+### iPhone / iPad — Ana Ekrana Ekle
+1. Telefonda HTTPS adresi aç (şu an çalışan geçici adres: `https://match-conjunction-actress-bag.trycloudflare.com/` — QR: `telefon-qr.png`).
+2. Safari → **Paylaş** → **Ana Ekrana Ekle**.
+3. Ana ekrandaki Pusula simgesi bağımsız pencerede açılır; ilk yüklemeden sonra çevrimdışı çalışır.
+
+Kalıcı bir HTTPS adresi için kendi GitHub hesabınla `./publish.sh` çalıştır; birkaç dakika sonra `https://<kullanıcı>.github.io/pusula-ajanda/` adresi oluşur.
+
+### Aynı Wi-Fi ile hızlı deneme
+```bash
+./telefon.sh
+```
+Ağ IP'sini yazdırır, `telefon-qr.png` oluşturur ve sunucuyu başlatır. Telefon aynı Wi-Fi'deyse QR'ı tarayabilirsin. (Android'de HTTP üzerinden PWA yüklemesi yapılmaz; APK'yı kullan.)
+
+### Tek dosya (yedek / acil durum)
+`dist/Pusula.html` dosyasını telefona atıp Dosyalar uygulamasından açabilirsin. Çalışır, ancak bazı tarayıcılar `file://` adresinde veri saklamaya izin vermediği için kalıcılık garanti değildir; asıl kullanım için APK veya yüklü PWA'yı kullan.
+
+## Uygulama olarak başlatma (masaüstü)
 
 **Linux / masaüstü — tek komut:**
 
@@ -70,8 +97,11 @@ Pusula, tanınmış uygulamaların en beğenilen yönlerini tek bir hafif araçt
 - `app.js` — durum yönetimi, doğal dil ayrıştırma, görünümler, kalıcılık, yükleme akışı
 - `manifest.webmanifest` — uygulama adı, ikonlar, bağımsız pencere ve kısayollar
 - `sw.js` — çevrimdışı önbellek (service worker)
-- `icons/` — uygulama, maskable ve iOS ikonları (`tools/make_icons.py` ile üretilir)
-- `start.sh` / `Pusula.desktop` — masaüstü başlatıcı
+- `icons/` — uygulama, maskable, iOS ve Android ikonları (`tools/make_icons.py` ile üretilir)
+- `android/` — WebView tabanlı Android projesi; `tools/build_apk.sh` ile `Pusula.apk` üretir
+- `dist/Pusula.html` — tüm CSS/JS'si gömülü tek dosyalık sürüm (`tools/build_offline.py`)
+- `site/` — GitHub Pages için yayına hazır web kopyası; `publish.sh` ile yayınlanır
+- `start.sh` / `Pusula.desktop` — masaüstü başlatıcı; `telefon.sh` — aynı Wi-Fi'de telefon erişimi
 - Kalıcılık: `localStorage` anahtarı `pusula.ajanda.v1`
 - Harici kütüphane yok; yalnızca isteğe bağlı Google Fonts bağlantısı var (erişilemezse sistem yazı tipleri kullanılır).
 
