@@ -7,18 +7,18 @@ Planlarını, görevlerini ve notlarını tek yerde takip etmek için tasarlanm�
 ## Telefona kurulum
 
 ### Android — gerçek APK (önerilen)
-1. `Pusula.apk` dosyasını telefona aktar (USB, WhatsApp, e-posta veya dosya paylaşımı).
+1. Telefondan şu adresi aç: `https://ekrem-create.github.io/pusula-ajanda/Pusula.apk` (veya `Pusula.apk` dosyasını USB/WhatsApp/e-posta ile aktar).
 2. Dosyaya dokun. Android "Bilinmeyen kaynaklardan yükleme" izni isterse izin ver.
 3. Yüklendikten sonra **Pusula** simgesi ana ekranda görünür; internet olmadan açılır.
 
 APK tamamen çevrimdışıdır: internet izni bile yoktur. Veriler uygulamanın kendi depolamasında kalır.
 
 ### iPhone / iPad — Ana Ekrana Ekle
-1. Telefonda HTTPS adresi aç (şu an çalışan geçici adres: `https://distinction-handmade-grey-survive.trycloudflare.com/` — QR: `telefon-qr.png`).
+1. Telefonda kalıcı adresi aç: `https://ekrem-create.github.io/pusula-ajanda/` (QR: `telefon-qr.png`).
 2. Safari → **Paylaş** → **Ana Ekrana Ekle**.
 3. Ana ekrandaki Pusula simgesi bağımsız pencerede açılır; ilk yüklemeden sonra çevrimdışı çalışır.
 
-Kalıcı bir HTTPS adresi için kendi GitHub hesabınla `./publish.sh` çalıştır; birkaç dakika sonra `https://<kullanıcı>.github.io/pusula-ajanda/` adresi oluşur.
+Kalıcı adres GitHub Pages üzerindedir; güncellemeler için `./publish.sh` yeterlidir.
 
 ### Aynı Wi-Fi ile hızlı deneme
 ```bash
