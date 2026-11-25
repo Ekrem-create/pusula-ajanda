@@ -35,10 +35,24 @@
       "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
+      "name": "Günlük notum",
+      "short_name": "Günlük not",
+      "description": "Bugünün notunu yaz",
+      "url": "./index.html?action=daily",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
       "name": "Not defteri",
       "short_name": "Notlar",
       "description": "Notları aç",
       "url": "./index.html?action=notes",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Günlük not arşivi",
+      "short_name": "Arşiv",
+      "description": "Geçmiş günlük notları aç",
+      "url": "./index.html?action=journal",
       "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]

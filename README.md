@@ -60,9 +60,11 @@ python3 -m http.server 8787
 
 - **Doğal dilde hızlı ekleme:** `Raporu bitir yarın saat 16 #iş !1 @Çalışma` tek satırda tarih, saat, etiket, öncelik ve proje algılar.
 - **Bugün görünümü:** Günün özeti, ilerleme halkası, gecikmiş işler ve 7 günlük şerit.
-- **Görünümler:** Bugün, Yaklaşan, Tüm görevler, Takvim, Notlar, Tamamlananlar, projeler ve etiketler.
+- **Görünümler:** Bugün, Yaklaşan, Tüm görevler, Takvim, Günlük notlar, Notlar, Tamamlananlar, projeler ve etiketler.
 - **Takvim:** Aylık görünümde görev yoğunluğu; güne tıklayarak o günün planını görüntüleme.
+- **Günlük notlar:** Bugün (veya takvimden seçilen gün) için yazdığın not yazarken otomatik kaydedilir; **Günlük notlar** ekranından geçmiş günlere dönüp düzenleyebilir/silebilirsin.
 - **Not defteri:** Renkli, sabitlenebilir not kartları ve düzenleyici.
+- **Telefon:** Alttaki sabit giriş çubuğuyla görev eklenir; ortadaki `+` düğmesi Bugün/Takvim/Günlük notlar ekranında günlük nota odaklanır, Notlar ekranında yeni not açar.
 - **Projeler & etiketler:** Renk kodlu projeler, etiket bazlı filtreleme.
 - **Sıralama & sürükle-bırak:** Elle, tarihe, önceliğe veya alfabetik sıralama.
 - **Koyu tema, arama, klavye kısayolları, JSON yedek alma/yükleme, geri almalı silme.**
@@ -101,10 +103,11 @@ Pusula, tanınmış uygulamaların en beğenilen yönlerini tek bir hafif araçt
 - `android/` — WebView tabanlı Android projesi; `tools/build_apk.sh` ile `Pusula.apk` üretir
 - `dist/Pusula.html` — tüm CSS/JS'si gömülü tek dosyalık sürüm (`tools/build_offline.py`)
 - `site/` — GitHub Pages için yayına hazır web kopyası; `publish.sh` ile yayınlanır
+- `tests/regression.js` — mobil giriş, günlük not ve not kaydı regresyon testi (`node tests/regression.js`)
 - `start.sh` / `Pusula.desktop` — masaüstü başlatıcı; `telefon.sh` — aynı Wi-Fi'de telefon erişimi
 - Kalıcılık: `localStorage` anahtarı `pusula.ajanda.v1`
 - Harici kütüphane yok; yalnızca isteğe bağlı Google Fonts bağlantısı var (erişilemezse sistem yazı tipleri kullanılır).
 
 ### Uygulama kısayolları
 
-Uygulama simgesine uzun basıldığında/sağ tıklandığında **Yeni görev**, **Bugün** ve **Notlar** seçenekleri doğrudan ilgili ekranı açar.
+Uygulama simgesine uzun basıldığında/sağ tıklandığında **Yeni görev**, **Bugün**, **Günlük notum**, **Notlar** ve **Günlük not arşivi** seçenekleri doğrudan ilgili ekranı açar.

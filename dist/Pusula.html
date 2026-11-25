@@ -1766,12 +1766,14 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
   if (document.readyState === 'complete') registerSW();
   else window.addEventListener('load', registerSW);
 
-  /* Uygulama kısayolları: ?action=new-task | today | notes */
+  /* Uygulama kısayolları: ?action=new-task | today | notes | journal | daily */
   try {
     const action = new URLSearchParams(window.location.search).get('action');
     if (action === 'notes') ui.view = 'notes';
+    else if (action === 'journal') ui.view = 'journal';
     else if (action === 'today') ui.view = 'today';
     else if (action === 'new-task') setTimeout(() => openTaskModal(null), 120);
+    else if (action === 'daily') setTimeout(() => $('#dailyNoteText').focus(), 120);
     if (action && window.history && window.history.replaceState) {
       window.history.replaceState({}, '', window.location.pathname);
     }
