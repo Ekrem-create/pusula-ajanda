@@ -734,7 +734,8 @@
     if (e.key === 'Enter') { e.preventDefault(); submitMobileTask(); }
     if (e.key === 'Escape') e.target.blur();
   });
-  $('#mobileAddSend').onclick = submitMobileTask;
+  $('#mobileAddSend').onclick = e => { e.preventDefault(); submitMobileTask(); };
+  $('#mobileAddBar').addEventListener('submit', e => { e.preventDefault(); submitMobileTask(); });
 
   /* Günlük notlar — yazarken otomatik kayıt */
   bindDaily($('#dailyNoteText'),

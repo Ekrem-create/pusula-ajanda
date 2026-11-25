@@ -825,12 +825,12 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
       </div>
 
       <!-- Telefon: sabit hızlı ekleme çubuğu -->
-      <div class="mobile-add-bar hidden" id="mobileAddBar">
+      <form class="mobile-add-bar hidden" id="mobileAddBar">
         <input id="mobileQuickAdd" type="text" enterkeyhint="done" autocomplete="off" placeholder="Görev ekle…  yarın #iş !1" />
-        <button id="mobileAddSend" aria-label="Görev ekle">
+        <button id="mobileAddSend" type="submit" aria-label="Görev ekle">
           <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         </button>
-      </div>
+      </form>
 
       <!-- Telefon: alt gezinme -->
       <nav class="bottom-nav" id="bottomNav" aria-label="Hızlı gezinme">
@@ -1604,7 +1604,8 @@ button, input, textarea, select, .check, .sub-item { touch-action: manipulation;
     if (e.key === 'Enter') { e.preventDefault(); submitMobileTask(); }
     if (e.key === 'Escape') e.target.blur();
   });
-  $('#mobileAddSend').onclick = submitMobileTask;
+  $('#mobileAddSend').onclick = e => { e.preventDefault(); submitMobileTask(); };
+  $('#mobileAddBar').addEventListener('submit', e => { e.preventDefault(); submitMobileTask(); });
 
   /* Günlük notlar — yazarken otomatik kayıt */
   bindDaily($('#dailyNoteText'),
